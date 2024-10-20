@@ -1,0 +1,62 @@
+name: Elixir CI
+run-name: Elixir Checks
+permissions:
+  contents: read
+on:
+  pull_request:
+    branches:
+      - "**"
+  push:
+    branches:
+      - main
+jobs:
+  elixir-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
+    strategy:
+      matrix:
+        otp:
+          - 26.2.1
+        elixir:
+          - 1.16.1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - name: Cache deps
+        id: cache-deps
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-elixir-deps
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ env.cache-name }}-
+      - name: Cache compiled build
+        id: cache-build
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-compiled-build
+        with:
+          path: _build
+          key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ env.cache-name }}-
+            ${{ runner.os }}-mix-
+      - name: Get dependencies and compile
+        run: |
+          mix local.hex --force
+          mix deps.get
+          mix compile --warnings-as-errors
+      - name: Verify formatting
+        run: mix format --check-formatted
+      - name: Audit dependencies
+        run: mix hex.audit
+      - name: Test
+        run: mix test
