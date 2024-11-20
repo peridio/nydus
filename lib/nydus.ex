@@ -163,6 +163,12 @@ defmodule Nydus do
     ret
   end
 
+  defp second_receive(%{signature: 2, version: 2, addresses_and_tlvs_length: 0} = state) do
+    addresses_block = ""
+    state = Map.put(state, :sr_bin, addresses_block)
+    {:ok, state}
+  end
+
   defp second_receive(%{signature: 2, version: 2} = state) do
     # Receive the rest of the header.
     case :gen_tcp.recv(state.socket, state.addresses_and_tlvs_length, state.second_timeout) do
