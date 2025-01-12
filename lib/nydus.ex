@@ -19,10 +19,10 @@ defmodule Nydus do
   - `:version_config` - Specifies which proxy protocol versions to accept. May be `1`, `2`, or
     `:all`. Defaults to `2`.
   - `:first_timeout` - Specifies a time-out in milliseconds for the first receive. If exceeded,
-    this function immediately returns an error. Defaults to `5_000`.
+    this function immediately returns an error. Defaults to `1_000`.
   - `:second_timeout` - Specifies a time-out in milliseconds for receiving the rest of the
     protocol's data after the first receive and decode have completed successfully. If exceeded,
-    this function immediately returns an error. Defaults to `5_000`.
+    this function immediately returns an error. Defaults to `1_000`.
 
   ## Receives and timeouts
 
@@ -36,8 +36,8 @@ defmodule Nydus do
   def receive_and_decode(socket, opts \\ []) do
     state = %{
       version_config: Keyword.get(opts, :version_config, 2),
-      first_timeout: Keyword.get(opts, :first_timeout, 5_000),
-      second_timeout: Keyword.get(opts, :second_timeout, 5_000),
+      first_timeout: Keyword.get(opts, :first_timeout, 1_000),
+      second_timeout: Keyword.get(opts, :second_timeout, 1_000),
       socket: socket
     }
 
