@@ -22,7 +22,7 @@ jobs:
         elixir:
           - 1.16.1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
@@ -30,7 +30,7 @@ jobs:
           elixir-version: ${{matrix.elixir}}
       - name: Cache deps
         id: cache-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-elixir-deps
         with:
@@ -40,7 +40,7 @@ jobs:
             ${{ runner.os }}-mix-${{ env.cache-name }}-
       - name: Cache compiled build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-compiled-build
         with:
